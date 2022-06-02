@@ -8,7 +8,7 @@ from algorithm import eclat
 def app():
     st.title("Info Data")
 
-    with open('./style.css') as f:
+    with open('./style/style.css') as f:
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
     
     df_trx = input.get_df_trx()
@@ -85,8 +85,6 @@ def app():
             st.write("10 Item Terbanyak Dibeli")
     
     with b2:
-        # st.plotly_chart(fig_klmpk)
-        # st.write("10 Kelompok Item Terbanyak Dibeli")
         if fig_klmpk is not None:
             st.plotly_chart(fig_klmpk)
         else:
