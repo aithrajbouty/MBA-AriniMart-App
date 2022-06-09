@@ -5,11 +5,33 @@ from algorithm import eclat
 def app():
     st.title("Input")
 
+    # session state
+    if 'df_trx' not in st.session_state:
+        st.session_state['df_trx'] = None
+
+    if 'eclat_per_item' not in st.session_state:
+        st.session_state['eclat_per_item'] = None
+
+    if 'basket_per_item' not in st.session_state:
+        st.session_state['basket_per_item'] = None
+
+    if 'df_kelompok' not in st.session_state:
+        st.session_state['df_kelompok'] = None
+
+    if 'eclat_per_klmpk' not in st.session_state:
+        st.session_state['eclat_per_klmpk'] = None
+
+    if 'basket_per_klmpk' not in st.session_state:
+        st.session_state['basket_per_klmpk'] = None
+
     global df_trx, kelompok_item, df_kelompok, trx_per_item, eclat_per_item, basket_per_item, trx_per_klmpk, eclat_per_klmpk, basket_per_klmpk
 
     # Upload file transaksi
-    file_transaksi = st.file_uploader(label="Unggah file data transaksi di sini",
-                                        type=['xlsx'])
+    file_transaksi = st.file_uploader(
+        label="Unggah file data transaksi di sini",
+        type=['xlsx']
+    )
+
     if file_transaksi is not None:
         df_trx = pd.read_excel(file_transaksi)
 
@@ -21,15 +43,31 @@ def app():
         eclat_per_item, basket_per_item = eclat.eclat_basket(
             data_trx=trx_per_item
         )
+        
+        st.session_state['df_trx'] = df_trx
+        st.session_state['eclat_per_item'] = eclat_per_item
+        st.session_state['basket_per_item'] = basket_per_item
     try:
-        st.write(df_trx)
+        if st.session_state['df_trx'] is not None:
+            st.write(st.session_state['df_trx'])
+        else:
+            st.write("")
     except Exception as e:
         print(e)
         st.write("")
   
     # Upload file kelompok item 
-    file_kelompok = st.file_uploader(label="Unggah file data kelompok item di sini",
-                                        type=['xlsx'])
+    if st.session_state['df_trx'] is None:
+        disabled = True
+    else:
+        disabled = False
+
+    file_kelompok = st.file_uploader(
+        label="Unggah file data kelompok item di sini",
+        type=['xlsx'],
+        disabled= disabled
+    )
+
     if file_kelompok is not None:
         kelompok_item = pd.read_excel(file_kelompok)
 
@@ -48,42 +86,16 @@ def app():
         eclat_per_klmpk, basket_per_klmpk = eclat.eclat_basket(
             data_trx=trx_per_klmpk,
         )
+
+        st.session_state['df_kelompok'] = df_kelompok
+        st.session_state['eclat_per_klmpk'] = eclat_per_klmpk
+        st.session_state['basket_per_klmpk'] = basket_per_klmpk
         
     try:
-        st.write(kelompok_item)
-        st.write(df_kelompok)
+        if st.session_state['df_kelompok'] is not None:
+            st.write(st.session_state['df_kelompok'])
+        else:
+            st.write("")
     except Exception as e:
         print(e)
         st.write("")
-    
-def get_df_trx():
-    try:
-        df_trx
-        return df_trx
-    except Exception as e:
-        print(e)
-        return None
-
-def get_basket_item():
-    try:
-        basket_per_item
-        return basket_per_item
-    except Exception as e:
-        print(e)
-        return None
-    
-def get_df_klmpk():
-    try:
-        df_kelompok
-        return df_kelompok
-    except Exception as e:
-        print(e)
-        return None
-
-def get_basket_klmpk():
-    try:
-        basket_per_klmpk
-        return basket_per_klmpk
-    except Exception as e:
-        print(e)
-        return None

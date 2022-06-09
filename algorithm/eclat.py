@@ -17,19 +17,19 @@ def eclat_basket(data_trx):
     basket = eclat.df_bin
     return(eclat, basket)
 
-def cari_freq_itemset(data, basket, minTrx, minValue, maxComb):
+def cari_freq_itemset(data, basket, minTrx, minValue):
     if(minTrx==True):
         minTransaction = minValue
         totalTransactions = len(basket.index)
         minSupport = minTransaction/totalTransactions
     else:
         minSupport = minValue
-    print('Nilai support minimum: ', round(minSupport*100, 4), '%')
+    # print('Nilai support minimum: ', round(minSupport*100, 4), '%')
     
-    eclat_indexes, eclat_supports  = data.fit(
+    eclat_indexes, eclat_supports = data.fit(
         min_support=minSupport,
         min_combination=1,
-        max_combination=maxComb,
+        max_combination=2,
         separator=' ; ',
         verbose=True
     )
@@ -43,13 +43,13 @@ def reshape_freq_itemset(eclat_support):
 
     frequent_itemsets['itemsets'] = list(frequent_itemsets.index)
     frequent_itemsets.index = range(len(frequent_itemsets.index))
-    
-    for i in frequent_itemsets.index:
-      frequent_itemsets['itemsets'][i] = frozenset(frequent_itemsets['itemsets'][i].split(" ; "))
-    
+        
     return frequent_itemsets
 
 def cari_assoc_rules(frequent_itemsets, minconf):
+    for i in frequent_itemsets.index:
+        frequent_itemsets['itemsets'][i] = frozenset(frequent_itemsets['itemsets'][i].split(" ; "))
+    
     rules = association_rules(frequent_itemsets, metric="lift", min_threshold=1)
     rules.sort_values('confidence', ascending = False, inplace = True)
     rules = rules.loc[rules['confidence'] >= minconf]
