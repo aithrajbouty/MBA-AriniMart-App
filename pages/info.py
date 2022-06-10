@@ -70,7 +70,6 @@ def app():
     a2.metric("Jumlah Item", jumlah_item)
     a3.metric("Jumlah Kelompok Item", jumlah_klmpk)
 
-    # Row B
     b1, b2 = st.columns(2)
     with b1:
         if fig_items is not None:
@@ -83,3 +82,15 @@ def app():
             st.plotly_chart(fig_klmpk)
         # else:
         #     st.write("10 Kelompok Item Terbanyak Dibeli")
+
+    # # Row B
+    # if fig_items is not None:
+    #     st.plotly_chart(fig_items)
+    # # else:
+    # #     st.write("10 Item Terbanyak Dibeli")
+
+    # # Row C
+    # if fig_klmpk is not None:
+    #     st.plotly_chart(fig_klmpk)
+    # # else:
+    # #     st.write("10 Item Terbanyak Dibeli")

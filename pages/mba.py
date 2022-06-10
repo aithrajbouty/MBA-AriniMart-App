@@ -3,6 +3,13 @@ import datetime
 from algorithm import eclat
 from pages import input
 
+def bg_colour_col (col):
+    colour = '#ffff00'
+    return ['background-color: %s' % colour 
+                if col.name=='support' or i==4   # color column `Total` or row `4`
+                else ''
+             for i,x in col.iteritems()]
+
 def app():
     st.title("Market Basket Analysis")
 
@@ -19,11 +26,17 @@ def app():
     if 'confidence' not in st.session_state:
         st.session_state['confidence'] = None
 
+    if 'maxCombination' not in st.session_state:
+        st.session_state['maxCombination'] = None
+
     if 'frequent_itemset' not in st.session_state:
         st.session_state['frequent_itemset'] = None
 
     if 'rules' not in st.session_state:
         st.session_state['rules'] = None
+
+    if 'pola_belanja' not in st.session_state:
+        st.session_state['pola_belanja'] = None
 
 
 
@@ -66,25 +79,39 @@ def app():
             disabled=disabled
         )
 
-        def handle_click(new_tipe, new_bentuk_support, new_support, new_confidence):
+        maxCombination = st.slider(
+            label='Kombinasi Maksimum', 
+            value=2,
+            min_value=1,
+            max_value=3,
+            key=int,
+            disabled=disabled
+        )
+
+        def handle_click(new_tipe, new_bentuk_support, new_support, new_confidence, newMaxCombination):
+            st.session_state['frequent_itemset'] = None
+            st.session_state['rules'] = None
+            st.session_state['pola_belanja'] = None
             st.session_state['tipe_analisis'] = new_tipe
             st.session_state['bentuk_support'] = new_bentuk_support
             st.session_state['support'] = new_support
             st.session_state['confidence'] = new_confidence
+            st.session_state['maxCombination'] = newMaxCombination
 
         lakukan_analisis = st.button(
             label="Lakukan Analisis", 
             on_click=handle_click, 
-            args=[tipe_analisis, bentuk_support, support, confidence],
+            args=[tipe_analisis, bentuk_support, support, confidence, maxCombination],
             disabled=disabled)
 
-    if st.session_state['tipe_analisis'] is None or st.session_state['bentuk_support'] is None or st.session_state['support'] is None or st.session_state['confidence'] is None:
+    if st.session_state['tipe_analisis'] is None or st.session_state['bentuk_support'] is None or st.session_state['support'] is None or st.session_state['confidence'] is None or st.session_state['maxCombination'] is None:
         st.write("")
     else:
         st.write('tipe_analisis: ', st.session_state['tipe_analisis'])
         st.write('bentuk_support: ', st.session_state['bentuk_support'])
         st.write('support: ', st.session_state['support'])
         st.write('confidence: ', st.session_state['confidence'])
+        st.write('maxCombination: ', st.session_state['maxCombination'])
 
         if(st.session_state.tipe_analisis == "Item"):
             data = st.session_state['eclat_per_item']
@@ -98,25 +125,48 @@ def app():
         else:
             minTrx = True   
 
-        eclat_indexes, eclat_supports = eclat.cari_freq_itemset(
-            data=data,
-            basket=basket,
-            minTrx=minTrx,
-            minValue=st.session_state['support']
-        )
-
         # cari frequent itemset
-        st.session_state['frequent_itemset'] = eclat.reshape_freq_itemset(eclat_support=eclat_supports)
         st.markdown("## Frequent Itemset")
-        st.write(st.session_state['frequent_itemset'])
+        if st.session_state['frequent_itemset'] is None:
+            eclat_indexes, eclat_supports = eclat.cari_freq_itemset(
+                data=data,
+                basket=basket,
+                minTrx=minTrx,
+                minValue=st.session_state['support'],
+                maxComb=st.session_state['maxCombination']
+            )
+            frequent_itemset = eclat.reshape_freq_itemset(eclat_support=eclat_supports)
+            st.session_state['frequent_itemset'] = frequent_itemset
+
+            freq_itemset = frequent_itemset.copy()
+            freq_itemset["itemsets"] = freq_itemset["itemsets"].apply(lambda x: ', '.join(list(x))).astype("unicode")
+            freq_itemset.style.apply(bg_colour_col)
+            st.write(freq_itemset)
+        else:
+            freq_itemset = st.session_state['frequent_itemset'].copy()
+            freq_itemset["itemsets"] = freq_itemset["itemsets"].apply(lambda x: ', '.join(list(x))).astype("unicode")
+            st.write(freq_itemset)
 
         # cari association rules
-        st.session_state['rules'] = eclat.cari_assoc_rules(
-            frequent_itemsets=st.session_state['frequent_itemset'],
-            minconf=st.session_state['confidence']
-        )
         st.markdown("## Association Rules")
-        st.write(st.session_state['rules'])
+        if st.session_state['rules'] is None:
+            rules = eclat.cari_assoc_rules(
+                freq_itemset=st.session_state['frequent_itemset'],
+                minconf=st.session_state['confidence']
+            )
+            st.session_state['rules'] = rules
+            st.write(st.session_state['rules'])
+        else:
+            st.write(st.session_state['rules'])
+
+        # buat pola belanja konsumen
+        st.markdown("## Pola Belanja Konsumen")
+        if st.session_state['pola_belanja'] is None:
+            pola_belanja_konsumen = eclat.buat_pola_belanja(st.session_state['rules'])
+            st.session_state['pola_belanja'] = pola_belanja_konsumen
+            st.write(pola_belanja_konsumen)
+        else:
+            st.write(st.session_state['pola_belanja'])
 
 
 

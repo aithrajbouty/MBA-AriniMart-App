@@ -5,25 +5,6 @@ from algorithm import eclat
 def app():
     st.title("Input")
 
-    # session state
-    if 'df_trx' not in st.session_state:
-        st.session_state['df_trx'] = None
-
-    if 'eclat_per_item' not in st.session_state:
-        st.session_state['eclat_per_item'] = None
-
-    if 'basket_per_item' not in st.session_state:
-        st.session_state['basket_per_item'] = None
-
-    if 'df_kelompok' not in st.session_state:
-        st.session_state['df_kelompok'] = None
-
-    if 'eclat_per_klmpk' not in st.session_state:
-        st.session_state['eclat_per_klmpk'] = None
-
-    if 'basket_per_klmpk' not in st.session_state:
-        st.session_state['basket_per_klmpk'] = None
-
     global df_trx, kelompok_item, df_kelompok, trx_per_item, eclat_per_item, basket_per_item, trx_per_klmpk, eclat_per_klmpk, basket_per_klmpk
 
     # Upload file transaksi
@@ -72,8 +53,8 @@ def app():
         kelompok_item = pd.read_excel(file_kelompok)
 
         # buat df dengan kelompok item
-        if df_trx is not None:
-            df_kelompok = df_trx.copy()
+        if st.session_state['df_trx'] is not None:
+            df_kelompok = st.session_state['df_trx'].copy()
             df_kelompok['INVENTARIS_NAMABARANG'] = df_kelompok['INVENTARIS_NAMABARANG'].map(kelompok_item.set_index('items')['kelompok'])
             df_kelompok.rename(columns={'INVENTARIS_NAMABARANG':'KELOMPOK_ITEM'}, inplace=True)
             df_kelompok = df_kelompok.drop_duplicates(subset = ['PENJUALAN_ID', 'KELOMPOK_ITEM'], keep = 'last')
