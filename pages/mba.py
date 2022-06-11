@@ -42,7 +42,7 @@ def app():
 
 
     if st.session_state['df_trx'] is None and st.session_state['df_kelompok'] is None:
-        st.write("Harap input data transaksi penjualan pada menu Input sebelum melakukan analisis. Untuk melakukan analisis berdasarkan item, harap input data kelompok item pada menu Input")
+        st.warning("Harap input data transaksi penjualan pada menu Input sebelum melakukan analisis. Untuk melakukan analisis berdasarkan item, harap input data kelompok item pada menu Input")
         list_analisis = ['Item', 'Kelompok Item']
         disabled = True
     elif st.session_state['df_kelompok'] is None:

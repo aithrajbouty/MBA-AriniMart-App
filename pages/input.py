@@ -40,6 +40,7 @@ def app():
     # Upload file kelompok item 
     if st.session_state['df_trx'] is None:
         disabled = True
+        st.warning("Data kelompok tidak dapat diinput apabila data transaksi belum diinput")
     else:
         disabled = False
 

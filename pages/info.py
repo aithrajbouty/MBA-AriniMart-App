@@ -12,6 +12,9 @@ def app():
 
     global jumlah_trx, jumlah_item, jumlah_klmpk
 
+    if st.session_state['df_trx'] is None or st.session_state['df_klmpk'] is None:
+        st.warning("Untuk melihat info data, harap input data transaksi dan/atau data kelompok item terlebih dahulu pada menu Input")
+
     # cek data transaksi
     if st.session_state['df_trx'] is not None:
         # jumlah untuk info
@@ -37,7 +40,7 @@ def app():
         jumlah_trx = "-"
         jumlah_item = "-"
         fig_items = None
-        st.write("Harap input data transaksi penjualan pada menu Input")
+        # st.warning("Harap input data transaksi penjualan pada menu Input")
 
     # cek data kelompok
     if st.session_state['df_kelompok'] is not None:
@@ -62,7 +65,7 @@ def app():
     else:
         jumlah_klmpk = "-"
         fig_klmpk = None
-        st.write("Harap input data kelompok item pada menu Input")
+        # st.warning("Harap input data kelompok item pada menu Input")
 
     # Row A
     a1, a2, a3 = st.columns(3)
