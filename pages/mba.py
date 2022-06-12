@@ -160,6 +160,7 @@ def app():
             )
             st.session_state['rules'] = rules
 
+            AgGrid(st.session_state['rules'], theme='streamlit')
             st.markdown(''' 
             - _Support_: presentase item terhadap total item yang berada pada dataset transaksi
             - _Confidence_: ukuran yang menunjukkan hubungan antar dua atau lebih item secara kondisional, misal menghitung kemungkinan item _consequent_ dibeli oleh pelanggan jika pelanggan membeli item _antecedent_
@@ -167,9 +168,15 @@ def app():
             - _Leverage_: digunakan untuk menghitung perbedaan antara frekuensi _antecedent_ dan _consequent_ yang mucnul bersamaan. Nilai _leverage_ = 0 artinya _antecedent_ dan _consequent_ bersifat independen
             - _Conviction_: menghitung tingkat implikasi aturan dan juga menilai independensi antara A dan B. Nilai _conviction_ = 0 artinya _antecedent_ dan _consequent_ bersifat
             ''')
-            AgGrid(st.session_state['rules'], theme='streamlit')
         else:
             AgGrid(st.session_state['rules'], theme='streamlit')
+            st.markdown(''' 
+            - _Support_: presentase item terhadap total item yang berada pada dataset transaksi
+            - _Confidence_: ukuran yang menunjukkan hubungan antar dua atau lebih item secara kondisional, misal menghitung kemungkinan item _consequent_ dibeli oleh pelanggan jika pelanggan membeli item _antecedent_
+            - _Lift_: mengukur seberapa sering _antecedent_ dan _consequent_ pada terjadi secara bersama-sama dan apakah mereka independen. Nilai _lift_ = 1 artinya _antecedent_ dan _consequent_ bersifat independen
+            - _Leverage_: digunakan untuk menghitung perbedaan antara frekuensi _antecedent_ dan _consequent_ yang mucnul bersamaan. Nilai _leverage_ = 0 artinya _antecedent_ dan _consequent_ bersifat independen
+            - _Conviction_: menghitung tingkat implikasi aturan dan juga menilai independensi antara A dan B. Nilai _conviction_ = 0 artinya _antecedent_ dan _consequent_ bersifat
+            ''')
 
         # buat pola belanja konsumen
         st.markdown("### Pola Belanja Konsumen")
