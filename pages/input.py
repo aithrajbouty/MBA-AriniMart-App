@@ -9,6 +9,7 @@ def app():
     global df_trx, kelompok_item, df_kelompok, trx_per_item, eclat_per_item, basket_per_item, trx_per_klmpk, eclat_per_klmpk, basket_per_klmpk
 
     # Upload file transaksi
+    st.markdown('### Data Transaksi Penjualan')
     file_transaksi = st.file_uploader(
         label="Unggah file data transaksi di sini",
         type=['xlsx'],
@@ -51,6 +52,7 @@ def app():
     
   
     # Upload file kelompok item 
+    st.markdown('### Data Kelompok Item')
     if st.session_state['df_trx'] is None:
         disabled = True
         st.warning("Data kelompok tidak dapat diinput apabila data transaksi belum diinput")
