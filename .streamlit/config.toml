@@ -1,12 +1,12 @@
 [theme]
-primaryColor="#529AEF"
-backgroundColor="#F1F5FB"
-secondaryBackgroundColor="#FFFFFF"
-textColor="#252733"
-font="sans serif"
+primaryColor='#529AEF'
+backgroundColor='#F1F5FB'
+secondaryBackgroundColor='#FFFFFF'
+textColor='#252733'
+font='sans serif'
 
 [global]
-dataFrameSerialization = "legacy"
+dataFrameSerialization = 'legacy'
 
 [server]
 headless = true
