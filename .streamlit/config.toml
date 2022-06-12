@@ -7,3 +7,8 @@ font="sans serif"
 
 [global]
 dataFrameSerialization = "legacy"
+
+[server]
+headless = true
+port = $PORT
+enableCORS = false
