@@ -1,5 +1,4 @@
 import streamlit as st
-# from multiapp import MultiApp
 from pages import beranda, info, input, mba
 from streamlit_option_menu import option_menu
 

@@ -1,5 +1,3 @@
-from asyncio import base_tasks
-from requests import session
 import streamlit as st
 import pandas as pd
 import plotly.express as px
