@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from st_aggrid import AgGrid
 from algorithm import eclat
 
 def app():
@@ -10,32 +11,44 @@ def app():
     # Upload file transaksi
     file_transaksi = st.file_uploader(
         label="Unggah file data transaksi di sini",
-        type=['xlsx']
+        type=['xlsx'],
+        accept_multiple_files=False
     )
 
-    if file_transaksi is not None:
+    if file_transaksi is not None and st.session_state['df_trx'] is None:
         df_trx = pd.read_excel(file_transaksi)
+        trx_headers = ['PENJUALAN_ID', 'PENJUALAN_TANGGAL', 'PENJUALAN_WAKTU', 'PENJUALAN_NILAI', 'DETIL_KODEBARANG', 'DETIL_SATUAN_JUMLAH', 'DETIL_SATUAN_HARGA', 'DETIL_TOTAL', 'INVENTARIS_NAMABARANG']
+        cek_df_trx = [i for i in df_trx.columns if i not in trx_headers]
 
-        # masukkan data ke eclat
-        trx_per_item = eclat.reshape_dataset(
-            dataset=df_trx, 
-            kolom="INVENTARIS_NAMABARANG"
-        )
-        eclat_per_item, basket_per_item = eclat.eclat_basket(
-            data_trx=trx_per_item
-        )
-        
-        st.session_state['df_trx'] = df_trx
-        st.session_state['eclat_per_item'] = eclat_per_item
-        st.session_state['basket_per_item'] = basket_per_item
+        # if st.session_state['df_trx'] is None:
+        # cek kalau data benar sesuai dengan yang diminta
+        if cek_df_trx == []:
+            # if st.session_state['df_trx'] is not None:
+            # masukkan data ke eclat
+            trx_per_item = eclat.reshape_dataset(
+                dataset=df_trx, 
+                kolom="INVENTARIS_NAMABARANG"
+            )
+            eclat_per_item, basket_per_item = eclat.eclat_basket(
+                data_trx=trx_per_item
+            )
+            
+            st.session_state['df_trx'] = df_trx
+            st.session_state['eclat_per_item'] = eclat_per_item
+            st.session_state['basket_per_item'] = basket_per_item
+
+        else:
+            st.error("Data yang anda masukkan salah! Data transaksi penjualan harus memiliki kolom seperti berikut: " + str(trx_headers))
+    
     try:
         if st.session_state['df_trx'] is not None:
-            st.write(st.session_state['df_trx'])
+            AgGrid(st.session_state['df_trx'], theme='streamlit')
         else:
             st.write("")
     except Exception as e:
         print(e)
         st.write("")
+    
   
     # Upload file kelompok item 
     if st.session_state['df_trx'] is None:
@@ -47,35 +60,46 @@ def app():
     file_kelompok = st.file_uploader(
         label="Unggah file data kelompok item di sini",
         type=['xlsx'],
-        disabled= disabled
+        disabled= disabled,
+        accept_multiple_files=False
     )
 
-    if file_kelompok is not None:
+    if file_kelompok is not None and st.session_state['df_kelompok'] is None:
         kelompok_item = pd.read_excel(file_kelompok)
+        st.session_state['kelompok_item'] = kelompok_item
+        klmpk_headers = ['items', 'kelompok']
+        cek_df_klmpk = [i for i in kelompok_item.columns if i not in klmpk_headers]
 
-        # buat df dengan kelompok item
-        if st.session_state['df_trx'] is not None:
+        # if st.session_state['df_kelompok'] is not None:
+        # cek kalau data benar
+        if cek_df_klmpk == []:
+            # buat df dengan kelompok item
             df_kelompok = st.session_state['df_trx'].copy()
             df_kelompok['INVENTARIS_NAMABARANG'] = df_kelompok['INVENTARIS_NAMABARANG'].map(kelompok_item.set_index('items')['kelompok'])
             df_kelompok.rename(columns={'INVENTARIS_NAMABARANG':'KELOMPOK_ITEM'}, inplace=True)
             df_kelompok = df_kelompok.drop_duplicates(subset = ['PENJUALAN_ID', 'KELOMPOK_ITEM'], keep = 'last')
-            
-        # masukkan data ke eclat
-        trx_per_klmpk = eclat.reshape_dataset(
-            dataset=df_kelompok,
-            kolom='KELOMPOK_ITEM'
-        )
-        eclat_per_klmpk, basket_per_klmpk = eclat.eclat_basket(
-            data_trx=trx_per_klmpk,
-        )
+                
+            # masukkan data ke eclat
+            trx_per_klmpk = eclat.reshape_dataset(
+                dataset=df_kelompok,
+                kolom='KELOMPOK_ITEM'
+            )
+            eclat_per_klmpk, basket_per_klmpk = eclat.eclat_basket(
+                data_trx=trx_per_klmpk,
+            )
 
-        st.session_state['df_kelompok'] = df_kelompok
-        st.session_state['eclat_per_klmpk'] = eclat_per_klmpk
-        st.session_state['basket_per_klmpk'] = basket_per_klmpk
+            st.session_state['df_kelompok'] = df_kelompok
+            st.session_state['eclat_per_klmpk'] = eclat_per_klmpk
+            st.session_state['basket_per_klmpk'] = basket_per_klmpk
+
+        else:
+            st.error("Data yang anda masukkan salah! Data kelompok item harus memiliki kolom seperti berikut: " + str(klmpk_headers))
         
     try:
         if st.session_state['df_kelompok'] is not None:
-            st.write(st.session_state['df_kelompok'])
+            AgGrid(st.session_state['kelompok_item'], theme='streamlit')
+            st.write('Data transaksi berdasarkan kelompok item:')
+            AgGrid(st.session_state['df_kelompok'], theme='streamlit')
         else:
             st.write("")
     except Exception as e:

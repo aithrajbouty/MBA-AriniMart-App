@@ -1,17 +1,12 @@
 import streamlit as st
+import pandas as pd
 import datetime
+from st_aggrid import AgGrid
 from algorithm import eclat
 from pages import input
 
-def bg_colour_col (col):
-    colour = '#ffff00'
-    return ['background-color: %s' % colour 
-                if col.name=='support' or i==4   # color column `Total` or row `4`
-                else ''
-             for i,x in col.iteritems()]
-
 def app():
-    st.title("Market Basket Analysis")
+    st.header("Market Basket Analysis")
 
     # set sessions
     if 'tipe_analisis' not in st.session_state:
@@ -46,7 +41,7 @@ def app():
         list_analisis = ['Item', 'Kelompok Item']
         disabled = True
     elif st.session_state['df_kelompok'] is None:
-        st.write("Perhatian: Anda hanya dapat melakukan analisis berdasarkan item karena data kelompok item belum diinput")
+        st.info("Perhatian: Anda hanya dapat melakukan analisis berdasarkan item karena data kelompok item belum diinput")
         list_analisis = ['Item']
         disabled = False
     else:
@@ -107,26 +102,35 @@ def app():
     if st.session_state['tipe_analisis'] is None or st.session_state['bentuk_support'] is None or st.session_state['support'] is None or st.session_state['confidence'] is None or st.session_state['maxCombination'] is None:
         st.write("")
     else:
-        st.write('tipe_analisis: ', st.session_state['tipe_analisis'])
-        st.write('bentuk_support: ', st.session_state['bentuk_support'])
-        st.write('support: ', st.session_state['support'])
-        st.write('confidence: ', st.session_state['confidence'])
-        st.write('maxCombination: ', st.session_state['maxCombination'])
-
         if(st.session_state.tipe_analisis == "Item"):
             data = st.session_state['eclat_per_item']
-            basket = st.session_state['eclat_per_klmpk']
+            basket = st.session_state['basket_per_item']
         elif(st.session_state.tipe_analisis == "Kelompok Item"):
             data = st.session_state['eclat_per_klmpk']
             basket = st.session_state['basket_per_klmpk']
 
-        if(bentuk_support == 'Nilai Support (Contoh: 0,01)'):
+        if(st.session_state['bentuk_support'] == 'Nilai Support (Contoh: 0,01)'):
             minTrx = False
+            minSupport = (f"{round((st.session_state['support']) * 100,2)}{'%'}")
         else:
             minTrx = True   
+            totalTransactions = len(basket.index)
+            minSupport = (f"{round(st.session_state['support']/totalTransactions * 100,2)}{'%'}")
+        
+        minConf = (f"{round((st.session_state['confidence']) * 100,2)}{'%'}")
+
+        parameters = {
+            'Tipe analisis':[st.session_state['tipe_analisis']],
+            'Nilai support minimum':[minSupport],
+            'Nilai confidence minimum': [minConf],
+            'Kombinasi Maksimum': [st.session_state['maxCombination']]
+        }
+        parameters_df = pd.DataFrame(parameters)
+        styler = parameters_df.style.hide_index()
+        st.write(styler.to_html(), unsafe_allow_html=True)
 
         # cari frequent itemset
-        st.markdown("## Frequent Itemset")
+        st.markdown("### Frequent Itemset")
         if st.session_state['frequent_itemset'] is None:
             eclat_indexes, eclat_supports = eclat.cari_freq_itemset(
                 data=data,
@@ -140,91 +144,30 @@ def app():
 
             freq_itemset = frequent_itemset.copy()
             freq_itemset["itemsets"] = freq_itemset["itemsets"].apply(lambda x: ', '.join(list(x))).astype("unicode")
-            freq_itemset.style.apply(bg_colour_col)
-            st.write(freq_itemset)
+            # freq_itemset.style.apply(bg_colour_col)
+            AgGrid(freq_itemset, theme='streamlit')
         else:
             freq_itemset = st.session_state['frequent_itemset'].copy()
             freq_itemset["itemsets"] = freq_itemset["itemsets"].apply(lambda x: ', '.join(list(x))).astype("unicode")
-            st.write(freq_itemset)
+            AgGrid(freq_itemset, theme='streamlit')
 
         # cari association rules
-        st.markdown("## Association Rules")
+        st.markdown("### Association Rules")
         if st.session_state['rules'] is None:
             rules = eclat.cari_assoc_rules(
                 freq_itemset=st.session_state['frequent_itemset'],
                 minconf=st.session_state['confidence']
             )
             st.session_state['rules'] = rules
-            st.write(st.session_state['rules'])
+            AgGrid(st.session_state['rules'], theme='streamlit')
         else:
-            st.write(st.session_state['rules'])
+            AgGrid(st.session_state['rules'], theme='streamlit')
 
         # buat pola belanja konsumen
-        st.markdown("## Pola Belanja Konsumen")
+        st.markdown("### Pola Belanja Konsumen")
         if st.session_state['pola_belanja'] is None:
             pola_belanja_konsumen = eclat.buat_pola_belanja(st.session_state['rules'])
             st.session_state['pola_belanja'] = pola_belanja_konsumen
-            st.write(pola_belanja_konsumen)
+            AgGrid(pola_belanja_konsumen, theme='streamlit', fit_columns_on_grid_load=True)
         else:
-            st.write(st.session_state['pola_belanja'])
-
-
-
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # # if 'birthday' not in st.session_state or 'genre' not in st.session_state:
-    #     st.session_state['birthday'] = datetime.date(2019, 7, 6);
-    #     st.session_state['genre'] = 'Comedy'
-
-    # # Using "with" notation
-    # with st.sidebar:
-    #     birthday = st.date_input(
-    #         label="When's your birthday",
-    #         value=datetime.date(2019, 7, 6),
-    #         # disabled=True
-    #         )
-
-    #     genre = st.radio(
-    #         "What's your favorite movie genre",
-    #         ('Comedy', 'Drama', 'Documentary'))
-        
-    #     def handle_click(new_birthday, new_genre):
-    #         st.session_state.birthday = new_birthday
-    #         st.session_state.genre = new_genre
-
-    #     st.button("Compute", on_click=handle_click, args=[birthday, genre])
-
-    # st.write(st.session_state['birthday'])
-    # st.write(st.session_state['genre'])
+            AgGrid(st.session_state['pola_belanja'], theme='streamlit', fit_columns_on_grid_load=True)

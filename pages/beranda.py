@@ -2,7 +2,7 @@ from numpy import imag
 import streamlit as st
 
 def app():
-    st.title("Beranda")
+    # st.title("Beranda")
 
     st.header('Apakah Fungsi dari aplikasi ini?')
     st.markdown(''' 
@@ -43,7 +43,7 @@ def app():
         - Informasi data yang disajikan berupa: jumlah transaksi, jumlah item, jumlah kelompok item, dan grafik 10 item dan kelompok item terbanyak dibeli
     4. Menu Analisis Data:
         - Untuk melakukan market basket analysis pada data yang sudah diinputkan
-        - Pengguna **WAJIB** mengisi persyaratan analisis yang berada pada sidebar di bagian kanan, yaitu:
+        - Pengguna **WAJIB** mengisi persyaratan analisis atau parameter yang berada pada sidebar di bagian kanan, yaitu:
             - Pilih untuk melakukan analisis berdasarkan item atau berdasarkan kelompok item
             - Jenis nilai support yang akan diinput. Pengguna dapat menginput nilai support secara langsung, yaitu dalam bentuk decimal/persenan: kalau 1% masukkan 0,01. Atau pengguna dapat memasukkan jumlah transaksi minimum item/kelompok item muncul pada data transaksi -> nilai support akan dihitung oleh aplikasi
             - Nilai _support_ minimum. Jika menggunakan nilai support langsung, masukkan dalam bentuk desimal (kalau 1% -> masukkan 0,01). Kalau pakai jumlah transaksi, langsung masukkan jumlah transaksinya (contoh 500)

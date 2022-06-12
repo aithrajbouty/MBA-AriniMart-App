@@ -1,4 +1,5 @@
 from asyncio import base_tasks
+from requests import session
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -7,13 +8,12 @@ from algorithm import eclat
 def app():
     st.title("Info Data")
 
-    with open('./style/style.css') as f:
-        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
-
     global jumlah_trx, jumlah_item, jumlah_klmpk
 
-    if st.session_state['df_trx'] is None or st.session_state['df_klmpk'] is None:
-        st.warning("Untuk melihat info data, harap input data transaksi dan/atau data kelompok item terlebih dahulu pada menu Input")
+    # st.write(st.session_state['df_trx'])
+
+    # if st.session_state['df_trx'] is None or st.session_state['df_klmpk'] is None:
+    #     st.warning("Untuk melihat info data, harap input data transaksi dan/atau data kelompok item terlebih dahulu pada menu Input")
 
     # cek data transaksi
     if st.session_state['df_trx'] is not None:
@@ -25,17 +25,21 @@ def app():
         df_total_item = pd.DataFrame(st.session_state['basket_per_item'].sum())
         df_total_item.index.name = "item"
         df_total_item.rename(columns={0: 'Total'}, inplace=True)
-        items_terbanyak = df_total_item.sort_values(by="Total", ascending=False).head(10)
+        items_terbanyak = df_total_item.sort_values(by="Total", ascending=False).head(10).sort_values(by="Total")
 
         # bar chart
         fig_items = px.bar(
             items_terbanyak,
-            x=items_terbanyak.index,
-            y="Total",
+            x="Total",
+            y=items_terbanyak.index,
+            orientation='h',
             title="<b> 10 Item Terbanyak Dibeli",
             color_discrete_sequence=["#529AEF"] * len(items_terbanyak),
             template="plotly_white"
-        )        
+        )   
+        fig_items.update_layout(
+            xaxis=(dict(showgrid=False))
+        )     
     else:
         jumlah_trx = "-"
         jumlah_item = "-"
@@ -51,17 +55,21 @@ def app():
         df_total_klmpk = pd.DataFrame(st.session_state['basket_per_klmpk'].sum())
         df_total_klmpk.index.name = "kelompok"
         df_total_klmpk.rename(columns={0: 'Total'}, inplace=True)
-        klmpk_terbanyak = df_total_klmpk.sort_values(by="Total", ascending=False).head(10)
+        klmpk_terbanyak = df_total_klmpk.sort_values(by="Total", ascending=False).head(10).sort_values(by="Total")
 
         # bar chart
         fig_klmpk = px.bar(
             klmpk_terbanyak,
-            x=klmpk_terbanyak.index,
-            y="Total",
+            x="Total",
+            y=klmpk_terbanyak.index,
+            orientation='h',
             title="<b> 10 Kelompok Item Terbanyak Dibeli",
             color_discrete_sequence=["#529AEF"] * len(items_terbanyak),
-            template="plotly_white"
+            template="plotly_white",
         )  
+        fig_klmpk.update_layout(
+            xaxis=(dict(showgrid=False))
+        )
     else:
         jumlah_klmpk = "-"
         fig_klmpk = None
