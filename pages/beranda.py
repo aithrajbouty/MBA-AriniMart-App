@@ -1,8 +1,6 @@
 import streamlit as st
 
 def app():
-    # st.title("Beranda")
-
     st.header('Apakah Fungsi dari Aplikasi Ini?')
     st.markdown(''' 
     Aplikasi ini berfungsi untuk melakukan analisis pada data transaksi penjualan AriniMart dengan menggunakan metode  _Market Basket Analysis_. Pengguna dapat melakukan dua macam analisis, yaitu analisis berdasarkan item dan analisis berdasarkan kelompok item.

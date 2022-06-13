@@ -7,3 +7,12 @@ div.css-1r6slb0{
 
 /* tbody th {display:none}
 .blank {display:none} */
+
+/* hide top navbar and footer */
+#MainMenu {
+    visibility: hidden;
+}
+
+footer {
+    visibility: hidden;
+}

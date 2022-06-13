@@ -1,3 +1,4 @@
+from numpy import empty
 import streamlit as st
 import pandas as pd
 import datetime
@@ -34,8 +35,7 @@ def app():
         st.session_state['pola_belanja'] = None
 
 
-
-
+    # cek data
     if st.session_state['df_trx'] is None and st.session_state['df_kelompok'] is None:
         st.warning("Harap input data transaksi penjualan pada menu Input sebelum melakukan analisis. Untuk melakukan analisis berdasarkan item, harap input data kelompok item pada menu Input")
         list_analisis = ['Item', 'Kelompok Item']
@@ -71,6 +71,7 @@ def app():
         confidence = st.number_input(
             label='Nilai Confidence Minimum', 
             value=0.3,
+            max_value=1.00,
             disabled=disabled
         )
 
@@ -99,9 +100,11 @@ def app():
             args=[tipe_analisis, bentuk_support, support, confidence, maxCombination],
             disabled=disabled)
 
+    # main body/content
     if st.session_state['tipe_analisis'] is None or st.session_state['bentuk_support'] is None or st.session_state['support'] is None or st.session_state['confidence'] is None or st.session_state['maxCombination'] is None:
         st.write("")
     else:
+        # assign data sesuai tipe analisis yang dipilih
         if(st.session_state.tipe_analisis == "Item"):
             data = st.session_state['eclat_per_item']
             basket = st.session_state['basket_per_item']
@@ -109,6 +112,7 @@ def app():
             data = st.session_state['eclat_per_klmpk']
             basket = st.session_state['basket_per_klmpk']
 
+        # assign support sesuai bentuk support yang dipilih
         if(st.session_state['bentuk_support'] == 'Nilai Support (Contoh: 0,01)'):
             minTrx = False
             minSupport = (f"{round((st.session_state['support']) * 100,2)}{'%'}")
@@ -119,6 +123,7 @@ def app():
         
         minConf = (f"{round((st.session_state['confidence']) * 100,2)}{'%'}")
 
+        # tabel parameter yang dipilih
         parameters = {
             'Tipe analisis':[st.session_state['tipe_analisis']],
             'Nilai support minimum':[minSupport],
@@ -144,7 +149,6 @@ def app():
 
             freq_itemset = frequent_itemset.copy()
             freq_itemset["itemsets"] = freq_itemset["itemsets"].apply(lambda x: ', '.join(list(x))).astype("unicode")
-            # freq_itemset.style.apply(bg_colour_col)
             AgGrid(freq_itemset, theme='streamlit')
         else:
             freq_itemset = st.session_state['frequent_itemset'].copy()
@@ -153,36 +157,33 @@ def app():
 
         # cari association rules
         st.markdown("### Association Rules")
-        if st.session_state['rules'] is None:
-            rules = eclat.cari_assoc_rules(
-                freq_itemset=st.session_state['frequent_itemset'],
-                minconf=st.session_state['confidence']
-            )
-            st.session_state['rules'] = rules
+        notes = st.markdown(''' 
+                - _Support_: presentase item terhadap total item yang berada pada dataset transaksi
+                - _Confidence_: ukuran yang menunjukkan hubungan antar dua atau lebih item secara kondisional, misal menghitung kemungkinan item _consequent_ dibeli oleh pelanggan jika pelanggan membeli item _antecedent_
+                - _Lift_: mengukur seberapa sering _antecedent_ dan _consequent_ pada terjadi secara bersama-sama dan apakah mereka independen. Nilai _lift_ = 1 artinya _antecedent_ dan _consequent_ bersifat independen
+                - _Leverage_: digunakan untuk menghitung perbedaan antara frekuensi _antecedent_ dan _consequent_ yang mucnul bersamaan. Nilai _leverage_ = 0 artinya _antecedent_ dan _consequent_ bersifat independen
+                - _Conviction_: menghitung tingkat implikasi aturan dan juga menilai independensi antara A dan B. Nilai _conviction_ = 0 artinya _antecedent_ dan _consequent_ bersifat
+                ''')
+        if not st.session_state['frequent_itemset'].empty:
+            if st.session_state['rules'] is None:
+                rules = eclat.cari_assoc_rules(
+                    freq_itemset=st.session_state['frequent_itemset'],
+                    minconf=st.session_state['confidence']
+                )
+                st.session_state['rules'] = rules
 
-            AgGrid(st.session_state['rules'], theme='streamlit')
-            st.markdown(''' 
-            - _Support_: presentase item terhadap total item yang berada pada dataset transaksi
-            - _Confidence_: ukuran yang menunjukkan hubungan antar dua atau lebih item secara kondisional, misal menghitung kemungkinan item _consequent_ dibeli oleh pelanggan jika pelanggan membeli item _antecedent_
-            - _Lift_: mengukur seberapa sering _antecedent_ dan _consequent_ pada terjadi secara bersama-sama dan apakah mereka independen. Nilai _lift_ = 1 artinya _antecedent_ dan _consequent_ bersifat independen
-            - _Leverage_: digunakan untuk menghitung perbedaan antara frekuensi _antecedent_ dan _consequent_ yang mucnul bersamaan. Nilai _leverage_ = 0 artinya _antecedent_ dan _consequent_ bersifat independen
-            - _Conviction_: menghitung tingkat implikasi aturan dan juga menilai independensi antara A dan B. Nilai _conviction_ = 0 artinya _antecedent_ dan _consequent_ bersifat
-            ''')
-        else:
-            AgGrid(st.session_state['rules'], theme='streamlit')
-            st.markdown(''' 
-            - _Support_: presentase item terhadap total item yang berada pada dataset transaksi
-            - _Confidence_: ukuran yang menunjukkan hubungan antar dua atau lebih item secara kondisional, misal menghitung kemungkinan item _consequent_ dibeli oleh pelanggan jika pelanggan membeli item _antecedent_
-            - _Lift_: mengukur seberapa sering _antecedent_ dan _consequent_ pada terjadi secara bersama-sama dan apakah mereka independen. Nilai _lift_ = 1 artinya _antecedent_ dan _consequent_ bersifat independen
-            - _Leverage_: digunakan untuk menghitung perbedaan antara frekuensi _antecedent_ dan _consequent_ yang mucnul bersamaan. Nilai _leverage_ = 0 artinya _antecedent_ dan _consequent_ bersifat independen
-            - _Conviction_: menghitung tingkat implikasi aturan dan juga menilai independensi antara A dan B. Nilai _conviction_ = 0 artinya _antecedent_ dan _consequent_ bersifat
-            ''')
+                notes
+                AgGrid(st.session_state['rules'], theme='streamlit')
+            else:
+                notes
+                AgGrid(st.session_state['rules'], theme='streamlit')
 
         # buat pola belanja konsumen
         st.markdown("### Pola Belanja Konsumen")
-        if st.session_state['pola_belanja'] is None:
-            pola_belanja_konsumen = eclat.buat_pola_belanja(st.session_state['rules'])
-            st.session_state['pola_belanja'] = pola_belanja_konsumen
-            AgGrid(pola_belanja_konsumen, theme='streamlit', fit_columns_on_grid_load=True)
-        else:
-            AgGrid(st.session_state['pola_belanja'], theme='streamlit', fit_columns_on_grid_load=True)
+        if st.session_state['rules'] is not None:
+            if st.session_state['pola_belanja'] is None:
+                pola_belanja_konsumen = eclat.buat_pola_belanja(st.session_state['rules'])
+                st.session_state['pola_belanja'] = pola_belanja_konsumen
+                AgGrid(pola_belanja_konsumen, theme='streamlit', fit_columns_on_grid_load=True)
+            else:
+                AgGrid(st.session_state['pola_belanja'], theme='streamlit', fit_columns_on_grid_load=True)

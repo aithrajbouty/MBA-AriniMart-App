@@ -1,3 +1,4 @@
+from threading import local
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -8,16 +9,11 @@ def app():
 
     global jumlah_trx, jumlah_item, jumlah_klmpk
 
-    # st.write(st.session_state['df_trx'])
-
-    # if st.session_state['df_trx'] is None or st.session_state['df_klmpk'] is None:
-    #     st.warning("Untuk melihat info data, harap input data transaksi dan/atau data kelompok item terlebih dahulu pada menu Input")
-
     # cek data transaksi
     if st.session_state['df_trx'] is not None:
         # jumlah untuk info
-        jumlah_trx = len(st.session_state['df_trx']['PENJUALAN_ID'].unique())
-        jumlah_item = len(st.session_state.df_trx['INVENTARIS_NAMABARANG'].unique())
+        jumlah_trx = '{:,}'.format(len(st.session_state['df_trx']['PENJUALAN_ID'].unique())).replace(',','.')
+        jumlah_item = '{:,}'.format(len(st.session_state['df_trx']['INVENTARIS_NAMABARANG'].unique())).replace(',','.')
 
         # data untuk bar chart
         df_total_item = pd.DataFrame(st.session_state['basket_per_item'].sum())
@@ -47,7 +43,7 @@ def app():
     # cek data kelompok
     if st.session_state['df_kelompok'] is not None:
         # jumlah untuk info
-        jumlah_klmpk = len(st.session_state.df_kelompok['KELOMPOK_ITEM'].unique())
+        jumlah_klmpk = '{:,}'.format(len(st.session_state['df_kelompok']['KELOMPOK_ITEM'].unique())).replace(',','.')
         
         # data untuk bar chart
         df_total_klmpk = pd.DataFrame(st.session_state['basket_per_klmpk'].sum())
@@ -83,23 +79,7 @@ def app():
     with b1:
         if fig_items is not None:
             st.plotly_chart(fig_items)
-        # else:
-        #     st.write("10 Item Terbanyak Dibeli")
     
     with b2:
         if fig_klmpk is not None:
             st.plotly_chart(fig_klmpk)
-        # else:
-        #     st.write("10 Kelompok Item Terbanyak Dibeli")
-
-    # # Row B
-    # if fig_items is not None:
-    #     st.plotly_chart(fig_items)
-    # # else:
-    # #     st.write("10 Item Terbanyak Dibeli")
-
-    # # Row C
-    # if fig_klmpk is not None:
-    #     st.plotly_chart(fig_klmpk)
-    # # else:
-    # #     st.write("10 Item Terbanyak Dibeli")

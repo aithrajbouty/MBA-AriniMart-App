@@ -21,10 +21,8 @@ def app():
         trx_headers = ['PENJUALAN_ID', 'PENJUALAN_TANGGAL', 'PENJUALAN_WAKTU', 'PENJUALAN_NILAI', 'DETIL_KODEBARANG', 'DETIL_SATUAN_JUMLAH', 'DETIL_SATUAN_HARGA', 'DETIL_TOTAL', 'INVENTARIS_NAMABARANG']
         cek_df_trx = [i for i in df_trx.columns if i not in trx_headers]
 
-        # if st.session_state['df_trx'] is None:
         # cek kalau data benar sesuai dengan yang diminta
         if cek_df_trx == []:
-            # if st.session_state['df_trx'] is not None:
             # masukkan data ke eclat
             trx_per_item = eclat.reshape_dataset(
                 dataset=df_trx, 
@@ -39,7 +37,7 @@ def app():
             st.session_state['basket_per_item'] = basket_per_item
 
         else:
-            st.error("Data yang anda masukkan salah! Data transaksi penjualan harus memiliki kolom seperti berikut: " + str(trx_headers))
+            st.error("Data yang anda masukkan salah! Data transaksi penjualan harus memiliki kolom seperti berikut: " + str(trx_headers)[1:-1] + ". Harap masukkan data yang sesuai")
     
     try:
         if st.session_state['df_trx'] is not None:
@@ -72,7 +70,6 @@ def app():
         klmpk_headers = ['items', 'kelompok']
         cek_df_klmpk = [i for i in kelompok_item.columns if i not in klmpk_headers]
 
-        # if st.session_state['df_kelompok'] is not None:
         # cek kalau data benar
         if cek_df_klmpk == []:
             # buat df dengan kelompok item
@@ -95,7 +92,7 @@ def app():
             st.session_state['basket_per_klmpk'] = basket_per_klmpk
 
         else:
-            st.error("Data yang anda masukkan salah! Data kelompok item harus memiliki kolom seperti berikut: " + str(klmpk_headers))
+            st.error("Data yang anda masukkan salah! Data kelompok item harus memiliki kolom seperti berikut: " + str(klmpk_headers)[1:-1] + ". Harap masukkan data yang sesuai")
         
     try:
         if st.session_state['df_kelompok'] is not None:
