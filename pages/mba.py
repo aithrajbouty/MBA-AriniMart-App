@@ -133,57 +133,59 @@ def app():
         parameters_df = pd.DataFrame(parameters)
         styler = parameters_df.style.hide_index()
         st.write(styler.to_html(), unsafe_allow_html=True)
+        st.write("")
 
-        # cari frequent itemset
-        st.markdown("### Frequent Itemset")
-        if st.session_state['frequent_itemset'] is None:
-            eclat_indexes, eclat_supports = eclat.cari_freq_itemset(
-                data=data,
-                basket=basket,
-                minTrx=minTrx,
-                minValue=st.session_state['support'],
-                maxComb=st.session_state['maxCombination']
-            )
-            frequent_itemset = eclat.reshape_freq_itemset(eclat_support=eclat_supports)
-            st.session_state['frequent_itemset'] = frequent_itemset
-
-            freq_itemset = frequent_itemset.copy()
-            freq_itemset["itemsets"] = freq_itemset["itemsets"].apply(lambda x: ', '.join(list(x))).astype("unicode")
-            AgGrid(freq_itemset, theme='streamlit')
-        else:
-            freq_itemset = st.session_state['frequent_itemset'].copy()
-            freq_itemset["itemsets"] = freq_itemset["itemsets"].apply(lambda x: ', '.join(list(x))).astype("unicode")
-            AgGrid(freq_itemset, theme='streamlit')
-
-        # cari association rules
-        st.markdown("### Association Rules")
-        notes = st.markdown(''' 
-                - _Support_: presentase item terhadap total item yang berada pada dataset transaksi
-                - _Confidence_: ukuran yang menunjukkan hubungan antar dua atau lebih item secara kondisional, misal menghitung kemungkinan item _consequent_ dibeli oleh pelanggan jika pelanggan membeli item _antecedent_
-                - _Lift_: mengukur seberapa sering _antecedent_ dan _consequent_ pada terjadi secara bersama-sama dan apakah mereka independen. Nilai _lift_ = 1 artinya _antecedent_ dan _consequent_ bersifat independen
-                - _Leverage_: digunakan untuk menghitung perbedaan antara frekuensi _antecedent_ dan _consequent_ yang mucnul bersamaan. Nilai _leverage_ = 0 artinya _antecedent_ dan _consequent_ bersifat independen
-                - _Conviction_: menghitung tingkat implikasi aturan dan juga menilai independensi antara A dan B. Nilai _conviction_ = 0 artinya _antecedent_ dan _consequent_ bersifat
-                ''')
-        if not st.session_state['frequent_itemset'].empty:
-            if st.session_state['rules'] is None:
-                rules = eclat.cari_assoc_rules(
-                    freq_itemset=st.session_state['frequent_itemset'],
-                    minconf=st.session_state['confidence']
+        with st.spinner('Analisis Data...'):
+            # cari frequent itemset
+            st.markdown("### Frequent Itemset")
+            if st.session_state['frequent_itemset'] is None:
+                eclat_indexes, eclat_supports = eclat.cari_freq_itemset(
+                    data=data,
+                    basket=basket,
+                    minTrx=minTrx,
+                    minValue=st.session_state['support'],
+                    maxComb=st.session_state['maxCombination']
                 )
-                st.session_state['rules'] = rules
+                frequent_itemset = eclat.reshape_freq_itemset(eclat_support=eclat_supports)
+                st.session_state['frequent_itemset'] = frequent_itemset
 
-                notes
-                AgGrid(st.session_state['rules'], theme='streamlit')
+                freq_itemset = frequent_itemset.copy()
+                freq_itemset["itemsets"] = freq_itemset["itemsets"].apply(lambda x: ', '.join(list(x))).astype("unicode")
+                AgGrid(freq_itemset, theme='streamlit')
             else:
-                notes
-                AgGrid(st.session_state['rules'], theme='streamlit')
+                freq_itemset = st.session_state['frequent_itemset'].copy()
+                freq_itemset["itemsets"] = freq_itemset["itemsets"].apply(lambda x: ', '.join(list(x))).astype("unicode")
+                AgGrid(freq_itemset, theme='streamlit')
 
-        # buat pola belanja konsumen
-        st.markdown("### Pola Belanja Konsumen")
-        if st.session_state['rules'] is not None:
-            if st.session_state['pola_belanja'] is None:
-                pola_belanja_konsumen = eclat.buat_pola_belanja(st.session_state['rules'])
-                st.session_state['pola_belanja'] = pola_belanja_konsumen
-                AgGrid(pola_belanja_konsumen, theme='streamlit', fit_columns_on_grid_load=True)
-            else:
-                AgGrid(st.session_state['pola_belanja'], theme='streamlit', fit_columns_on_grid_load=True)
+            # cari association rules
+            st.markdown("### Association Rules")
+            notes = st.markdown(''' 
+                    - _Support_: presentase item terhadap total item yang berada pada dataset transaksi
+                    - _Confidence_: ukuran yang menunjukkan hubungan antar dua atau lebih item secara kondisional, misal menghitung kemungkinan item _consequent_ dibeli oleh pelanggan jika pelanggan membeli item _antecedent_
+                    - _Lift_: mengukur seberapa sering _antecedent_ dan _consequent_ pada terjadi secara bersama-sama dan apakah mereka independen. Nilai _lift_ = 1 artinya _antecedent_ dan _consequent_ bersifat independen
+                    - _Leverage_: digunakan untuk menghitung perbedaan antara frekuensi _antecedent_ dan _consequent_ yang mucnul bersamaan. Nilai _leverage_ = 0 artinya _antecedent_ dan _consequent_ bersifat independen
+                    - _Conviction_: menghitung tingkat implikasi aturan dan juga menilai independensi antara A dan B. Nilai _conviction_ = 0 artinya _antecedent_ dan _consequent_ bersifat
+                    ''')
+            if not st.session_state['frequent_itemset'].empty:
+                if st.session_state['rules'] is None:
+                    rules = eclat.cari_assoc_rules(
+                        freq_itemset=st.session_state['frequent_itemset'],
+                        minconf=st.session_state['confidence']
+                    )
+                    st.session_state['rules'] = rules
+
+                    notes
+                    AgGrid(st.session_state['rules'], theme='streamlit')
+                else:
+                    notes
+                    AgGrid(st.session_state['rules'], theme='streamlit')
+
+            # buat pola belanja konsumen
+            st.markdown("### Pola Belanja Konsumen")
+            if st.session_state['rules'] is not None:
+                if st.session_state['pola_belanja'] is None:
+                    pola_belanja_konsumen = eclat.buat_pola_belanja(st.session_state['rules'])
+                    st.session_state['pola_belanja'] = pola_belanja_konsumen
+                    AgGrid(pola_belanja_konsumen, theme='streamlit', fit_columns_on_grid_load=True)
+                else:
+                    AgGrid(st.session_state['pola_belanja'], theme='streamlit', fit_columns_on_grid_load=True)
