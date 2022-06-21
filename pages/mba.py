@@ -58,7 +58,7 @@ def app():
 
         bentuk_support = st.radio(
             label="Untuk menginput nilai support minimum dapat dilakukan dengan cara menginput:",
-            options=('Nilai Support (Contoh: 0,01)', 'Jumlah Transaksi (Contoh: 500)'),
+            options=('Persentase Support (Contoh: 0,01)','Jumlah Transaksi (Contoh: 500)'),
             disabled=disabled
         )
 
@@ -113,7 +113,7 @@ def app():
             basket = st.session_state['basket_per_klmpk']
 
         # assign support sesuai bentuk support yang dipilih
-        if(st.session_state['bentuk_support'] == 'Nilai Support (Contoh: 0,01)'):
+        if(st.session_state['bentuk_support'] == 'Persentase Support (Contoh: 0,01)'):
             minTrx = False
             minSupport = (f"{round((st.session_state['support']) * 100,2)}{'%'}")
         else:

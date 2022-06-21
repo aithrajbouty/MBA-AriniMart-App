@@ -16,10 +16,9 @@ def app():
         type=['xlsx'],
         accept_multiple_files=False
     )
-    
-    # st.write(inspect.getargspec(hc.HyLoader))
+    st.write(file_transaksi)
 
-    if file_transaksi is not None and st.session_state['df_trx'] is None:
+    def buat_dfTrx():
         with st.spinner('Memroses Data...'):
             df_trx = pd.read_excel(file_transaksi)
             trx_headers = ['PENJUALAN_ID', 'PENJUALAN_TANGGAL', 'PENJUALAN_WAKTU', 'PENJUALAN_NILAI', 'DETIL_KODEBARANG', 'DETIL_SATUAN_JUMLAH', 'DETIL_SATUAN_HARGA', 'DETIL_TOTAL', 'INVENTARIS_NAMABARANG']
@@ -42,6 +41,19 @@ def app():
 
             else:
                 st.error("Data yang anda masukkan salah! Data transaksi penjualan harus memiliki kolom seperti berikut: " + str(trx_headers)[1:-1] + ". Harap masukkan data yang sesuai")
+                st.session_state['df_trx'] = None
+                st.session_state['eclat_per_item'] = None
+                st.session_state['basket_per_item'] = None
+
+    if file_transaksi is not None:
+        if st.session_state['df_trx'] is None:
+            buat_dfTrx()
+        elif st.session_state['df_trx'] is not None:
+            st.session_state['df_kelompok'] = None
+            st.session_state['eclat_per_klmpk'] = None
+            st.session_state['basket_per_klmpk'] = None
+
+            buat_dfTrx()
     
     try:
         if st.session_state['df_trx'] is not None:
@@ -68,7 +80,7 @@ def app():
         accept_multiple_files=False
     )
 
-    if file_kelompok is not None and st.session_state['df_kelompok'] is None:
+    if file_kelompok is not None:
         with st.spinner('Memroses Data...'):
             kelompok_item = pd.read_excel(file_kelompok)
             st.session_state['kelompok_item'] = kelompok_item
@@ -98,6 +110,9 @@ def app():
 
             else:
                 st.error("Data yang anda masukkan salah! Data kelompok item harus memiliki kolom seperti berikut: " + str(klmpk_headers)[1:-1] + ". Harap masukkan data yang sesuai")
+                st.session_state['df_kelompok'] = None
+                st.session_state['eclat_per_klmpk'] = None
+                st.session_state['basket_per_klmpk'] = None
         
     try:
         if st.session_state['df_kelompok'] is not None:
