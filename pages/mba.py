@@ -159,13 +159,6 @@ def app():
 
             # cari association rules
             st.markdown("### Association Rules")
-            notes = st.markdown(''' 
-                    - _Support_: presentase item terhadap total item yang berada pada dataset transaksi
-                    - _Confidence_: ukuran yang menunjukkan hubungan antar dua atau lebih item secara kondisional, misal menghitung kemungkinan item _consequent_ dibeli oleh pelanggan jika pelanggan membeli item _antecedent_
-                    - _Lift_: mengukur seberapa sering _antecedent_ dan _consequent_ pada terjadi secara bersama-sama dan apakah mereka independen. Nilai _lift_ = 1 artinya _antecedent_ dan _consequent_ bersifat independen
-                    - _Leverage_: digunakan untuk menghitung perbedaan antara frekuensi _antecedent_ dan _consequent_ yang mucnul bersamaan. Nilai _leverage_ = 0 artinya _antecedent_ dan _consequent_ bersifat independen
-                    - _Conviction_: menghitung tingkat implikasi aturan dan juga menilai independensi antara A dan B. Nilai _conviction_ = 0 artinya _antecedent_ dan _consequent_ bersifat
-                    ''')
             if not st.session_state['frequent_itemset'].empty:
                 if st.session_state['rules'] is None:
                     rules = eclat.cari_assoc_rules(
@@ -174,11 +167,14 @@ def app():
                     )
                     st.session_state['rules'] = rules
 
-                    notes
-                    AgGrid(st.session_state['rules'], theme='streamlit')
-                else:
-                    notes
-                    AgGrid(st.session_state['rules'], theme='streamlit')
+                st.markdown(''' 
+                    - _Support_: presentase item terhadap total item yang berada pada dataset transaksi
+                    - _Confidence_: ukuran yang menunjukkan hubungan antar dua atau lebih item secara kondisional, misal menghitung kemungkinan item _consequent_ dibeli oleh pelanggan jika pelanggan membeli item _antecedent_
+                    - _Lift_: mengukur seberapa sering _antecedent_ dan _consequent_ pada terjadi secara bersama-sama dan apakah mereka independen. Nilai _lift_ = 1 artinya _antecedent_ dan _consequent_ bersifat independen
+                    - _Leverage_: digunakan untuk menghitung perbedaan antara frekuensi _antecedent_ dan _consequent_ yang mucnul bersamaan. Nilai _leverage_ = 0 artinya _antecedent_ dan _consequent_ bersifat independen
+                    - _Conviction_: menghitung tingkat implikasi aturan dan juga menilai independensi antara A dan B. Nilai _conviction_ = 0 artinya _antecedent_ dan _consequent_ bersifat
+                    ''')
+                AgGrid(st.session_state['rules'], theme='streamlit')
 
             # buat pola belanja konsumen
             st.markdown("### Pola Belanja Konsumen")
@@ -186,6 +182,5 @@ def app():
                 if st.session_state['pola_belanja'] is None:
                     pola_belanja_konsumen = eclat.buat_pola_belanja(st.session_state['rules'])
                     st.session_state['pola_belanja'] = pola_belanja_konsumen
-                    AgGrid(pola_belanja_konsumen, theme='streamlit', fit_columns_on_grid_load=True)
-                else:
-                    AgGrid(st.session_state['pola_belanja'], theme='streamlit', fit_columns_on_grid_load=True)
+                   
+                AgGrid(st.session_state['pola_belanja'], theme='streamlit', fit_columns_on_grid_load=True)

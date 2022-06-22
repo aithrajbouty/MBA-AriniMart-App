@@ -16,7 +16,6 @@ def app():
         type=['xlsx'],
         accept_multiple_files=False
     )
-    st.write(file_transaksi)
 
     def buat_dfTrx():
         with st.spinner('Memroses Data...'):
