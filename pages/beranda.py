@@ -3,17 +3,17 @@ import streamlit as st
 def app():
     st.header('Apakah Fungsi dari Aplikasi Ini?')
     st.markdown(''' 
-    Aplikasi ini berfungsi untuk melakukan analisis pada data transaksi penjualan AriniMart dengan menggunakan metode  _Market Basket Analysis_. Pengguna dapat melakukan dua macam analisis, yaitu analisis berdasarkan item dan analisis berdasarkan kelompok item.
+    Aplikasi ini berfungsi untuk melakukan **analisis** pada **data transaksi penjualan AriniMart** dengan menggunakan metode  **_Market Basket Analysis_**. Pengguna dapat melakukan dua macam analisis, yaitu analisis berdasarkan item dan analisis berdasarkan kelompok item.
     ''')
 
     st.markdown('## Apa itu _Market Basket Analysis_?')
     st.markdown(''' 
-    _Market Basket Analysis_ (MBA) atau yang dapat diartikan sebagai analisis keranjang belanja, yang merupakan salah satu metode dalam _data mining_. Dengan menggunakan MBA, kita dapat mengetahui perilaku kebiasaan konsumen dalam pembelian barang, sehingga dapat diketahui asosiasi barang-barang yang seringkali dibeli secara bersamaan atau yang disebut juga sebagai _frequent itemset_. Pencarian asosiasi dilakukan dengan mengolah data pembelian barang dari setiap transaksi penjualan, kemudian dicari hubungan antar barang-barang tersebut.
+    _Market Basket Analysis_ (MBA) atau yang dapat diartikan sebagai analisis keranjang pasar, merupakan salah satu metode dalam _data mining_. Dengan menggunakan MBA, kita dapat mengetahui **perilaku kebiasaan konsumen** dalam pembelian barang, sehingga dapat diketahui asosiasi barang-barang yang seringkali dibeli secara bersamaan atau yang disebut juga sebagai _frequent itemset_. Pencarian asosiasi dilakukan dengan mengolah data pembelian barang dari setiap transaksi penjualan, kemudian dicari hubungan antar barang-barang tersebut.
     ''')
 
     st.markdown('## Kegunaan _Market Basket Analysis_')
     st.markdown(''' 
-    Toko AriniMart dapat menggunakan _market basket analysis_ untuk menciptakan strategi bisnis yang dapat digunakan untuk bersaing dengan bisnis lain. Dengan memanfaatkan informasi yang dihasilkan oleh analisis, yaitu barang-barang yang seringkali dibeli secara bersamaan, bisnis dapat menyusun strategi seperti menyediakan stok barang yang diminati konsumen ataupun melakukan penataan tata letak barang pada rak.
+    Toko AriniMart dapat menggunakan _market basket analysis_ untuk menciptakan **strategi bisnis** yang dapat digunakan untuk bersaing dengan bisnis lain. Dengan memanfaatkan informasi yang dihasilkan oleh analisis, yaitu barang-barang yang seringkali dibeli secara bersamaan, bisnis dapat menyusun strategi seperti **menyediakan stok barang yang diminati konsumen** ataupun **melakukan penataan tata letak barang pada rak**.
     ''')
 
     st.header('Fungsi Menu')
