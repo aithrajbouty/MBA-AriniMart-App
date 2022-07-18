@@ -47,7 +47,7 @@ def app():
     if file_transaksi is not None:
         if st.session_state['df_trx'] is None:
             buat_dfTrx()
-        elif st.session_state['df_trx'] is not None:
+        elif st.session_state['df_trx'] is not None and st.session_state['df_kelompok'] is not None:
             st.session_state['df_kelompok'] = None
             st.session_state['eclat_per_klmpk'] = None
             st.session_state['basket_per_klmpk'] = None
